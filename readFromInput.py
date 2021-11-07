@@ -1,4 +1,9 @@
 import csv
+import os
+import sys
+import matplotlib.pyplot as plt
+
+
 
 xCoord = []
 yCoord = []
@@ -17,3 +22,7 @@ with open('testData - Sheet1.csv') as csv_file:
     
 print(str(xCoord))
 print(str(yCoord))
+
+plt.scatter(xCoord,yCoord)
+
+plt.show()
