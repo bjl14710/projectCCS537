@@ -2,6 +2,9 @@ import csv
 import os
 import sys
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial import Delaunay, delaunay_plot_2d
+
 
 
 
@@ -22,7 +25,16 @@ with open('testData - Sheet1.csv') as csv_file:
     
 print(str(xCoord))
 print(str(yCoord))
+def constructPoints(x,y):
+    points = []
+    for i in range(len(x)):
+        points.append((x[i],y[i]))
+    return points
 
+points = constructPoints(xCoord,yCoord)
+# print(str(points))
+tri = Delaunay(points)
+_ = delaunay_plot_2d(tri)
 plt.scatter(xCoord,yCoord)
 
 plt.show()
