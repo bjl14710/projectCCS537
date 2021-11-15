@@ -165,13 +165,11 @@ arr = constructArray(xCoord,yCoord,zCoord)
 # plt.show()
 
 
-fig = plt.figure()
-ax = plt.axes(projection="3d")
 
-z_line = np.linspace(0, 15, 1000)
-x_line = np.cos(z_line)
-y_line = np.sin(z_line)
-ax.plot3D(x_line, y_line, z_line, 'gray')
+# z_line = np.linspace(0, 15, 1000)
+# x_line = np.cos(z_line)
+# y_line = np.sin(z_line)
+# ax.plot3D(x_line, y_line, z_line, 'gray')
 
 z_points = 15 * np.random.random(len(zCoord))
 # x_points = np.cos(z_points) + 0.1 * np.random.randn(100)
@@ -183,7 +181,32 @@ yCoord = np.array(yCoord,dtype = float)
 
 zCoord = np.array(zCoord,dtype = float)
 
-ax.scatter3D(xCoord, yCoord, zCoord, c=z_points, cmap='hsv');
+def plot_triangulation(ax,points,tri):
+    for tri in tri.simplices:
+        pts = points[tri, :]
+        ax.plot3D(pts[[0,1],0], pts[[0,1],1], pts[[0,1],2], color='g', lw='0.1')
+        ax.plot3D(pts[[0,2],0], pts[[0,2],1], pts[[0,2],2], color='g', lw='0.1')
+        ax.plot3D(pts[[0,3],0], pts[[0,3],1], pts[[0,3],2], color='g', lw='0.1')
+        ax.plot3D(pts[[1,2],0], pts[[1,2],1], pts[[1,2],2], color='g', lw='0.1')
+        ax.plot3D(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2], color='g', lw='0.1')
+        ax.plot3D(pts[[2,3],0], pts[[2,3],1], pts[[2,3],2], color='g', lw='0.1')
+    
+    ax.scatter(points[:,0], points[:,1], points[:,2], color='b')
+
+
+# points_init = np.array(xCoord,yCoord, dtype = float)
+
+# points = np.array((xCoord,yCoord,zCoord), dtype = float)
+
+points = np.vstack([xCoord,yCoord,zCoord]).T
+tri = Delaunay(points)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+
+plot_triangulation(ax, points,tri)
+
+# ax.scatter3D(xCoord, yCoord, zCoord, c=z_points, cmap='hsv')
 
 plt.show()
 
