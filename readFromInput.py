@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 # from scipy.spatial import Delaunay, delaunay_plot_2d
@@ -38,7 +39,7 @@ with open('data/hygdata_v3.csv') as csv_file:
         if line_count < 2:
             # print(f'Coloumn names are {", ".join(row)}')
             line_count += 1
-        elif line_count < 10:
+        elif line_count < 11:
             xCoord.append(row[17])
             yCoord.append(row[18])
             zCoord.append(row[19])
@@ -68,7 +69,8 @@ def constructArray(x,y,z):
         arr.append((x[i],y[i],z[i]))
     return arr
 
-
+def distance(x1,y1,z1,x2,y2,z2):
+    return sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)
 
 # def plot_tri_simple(ax, points, tri):
 #     for tr in tri.simplices:
