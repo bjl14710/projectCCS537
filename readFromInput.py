@@ -70,7 +70,10 @@ def constructArray(x,y,z):
     return arr
 
 def distance(x1,y1,z1,x2,y2,z2):
-    return sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)
+    deltX = (x2-x1)
+    deltY = (y2-y1)
+    deltZ = (z2-z1)
+    return math.sqrt(deltX*deltX + deltY*deltY + deltZ*deltZ)
 
 # def plot_tri_simple(ax, points, tri):
 #     for tr in tri.simplices:
@@ -183,16 +186,20 @@ yCoord = np.array(yCoord,dtype = float)
 
 zCoord = np.array(zCoord,dtype = float)
 
+
+distanceList = []
 def plot_triangulation(ax,points,tri):
     for tri in tri.simplices:
         pts = points[tri, :]
         ax.plot3D(pts[[0,1],0], pts[[0,1],1], pts[[0,1],2], color='g', lw='0.1')
         ax.plot3D(pts[[0,2],0], pts[[0,2],1], pts[[0,2],2], color='g', lw='0.1')
+        distanceList.append(distance(pts[[0,1],0], pts[[0,1],1], pts[[0,1],2],pts[[0,2],0], pts[[0,2],1], pts[[0,2],2]))
         ax.plot3D(pts[[0,3],0], pts[[0,3],1], pts[[0,3],2], color='g', lw='0.1')
         ax.plot3D(pts[[1,2],0], pts[[1,2],1], pts[[1,2],2], color='g', lw='0.1')
+        distanceList.append(distance(pts[[0,3],0], pts[[0,3],1], pts[[0,3],2],pts[[1,2],0], pts[[1,2],1], pts[[1,2],2]))        
         ax.plot3D(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2], color='g', lw='0.1')
         ax.plot3D(pts[[2,3],0], pts[[2,3],1], pts[[2,3],2], color='g', lw='0.1')
-    
+        distanceList.append(distance(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2],pts[[2,3],0], pts[[2,3],1], pts[[2,3],2]))    
     ax.scatter(points[:,0], points[:,1], points[:,2], color='b')
 
 
