@@ -219,7 +219,7 @@ plot_triangulation(ax, points,tri)
 
 plt.show()
 
-
+# https://stackoverflow.com/questions/64530316/euclidean-distance-of-delaney-triangulation-scipy
 
 
 
