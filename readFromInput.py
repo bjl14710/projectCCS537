@@ -15,6 +15,7 @@ class Coord:
         self.point = point
         self.size = size
 
+
 xCoord = []
 yCoord = []
 zCoord = []
@@ -144,7 +145,7 @@ arr = constructArray(xCoord,yCoord,zCoord)
 # z = np.random.randint(100, size =(50))
 # x = np.random.randint(80, size =(50))
 # y = np.random.randint(60, size =(50))
- 
+
 # x = [] * len(xCoord)
 # y = [] * len(yCoord)
 # z = [] * len(zCoord)
@@ -187,25 +188,61 @@ yCoord = np.array(yCoord,dtype = float)
 zCoord = np.array(zCoord,dtype = float)
 
 
-distanceList = []
+distanceList1 = []
+distanceList2 = []
+distanceList3 = []
+distanceList4 = []
+distanceList5 = []
+distanceList6 = []
+
+def average(x,y,z):
+    return (x+y+z)/3
+
+
 def plot_triangulation(ax,points,tri):
     for tri in tri.simplices:
         pts = points[tri, :]
         ax.plot3D(pts[[0,1],0], pts[[0,1],1], pts[[0,1],2], color='g', lw='0.1')
+        distanceList1.append(distance(pts[0,0], pts[0,1], pts[0,2],pts[1,0], pts[1,1], pts[1,2]))
         ax.plot3D(pts[[0,2],0], pts[[0,2],1], pts[[0,2],2], color='g', lw='0.1')
-        distanceList.append(distance(pts[[0,1],0], pts[[0,1],1], pts[[0,1],2],pts[[0,2],0], pts[[0,2],1], pts[[0,2],2]))
+        distanceList2.append(distance(pts[0,0], pts[0,1], pts[0,2],pts[2,0], pts[2,1], pts[2,2]))
         ax.plot3D(pts[[0,3],0], pts[[0,3],1], pts[[0,3],2], color='g', lw='0.1')
+        distanceList3.append(distance(pts[0,0], pts[0,1], pts[0,2],pts[3,0], pts[3,1], pts[3,2]))
         ax.plot3D(pts[[1,2],0], pts[[1,2],1], pts[[1,2],2], color='g', lw='0.1')
-        distanceList.append(distance(pts[[0,3],0], pts[[0,3],1], pts[[0,3],2],pts[[1,2],0], pts[[1,2],1], pts[[1,2],2]))        
+        distanceList4.append(distance(pts[1,0], pts[1,1], pts[1,2],pts[2,0], pts[2,1], pts[2,2]))        
         ax.plot3D(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2], color='g', lw='0.1')
+        distanceList5.append(distance(pts[1,0], pts[1,1], pts[1,2],pts[3,0], pts[3,1], pts[3,2]))
         ax.plot3D(pts[[2,3],0], pts[[2,3],1], pts[[2,3],2], color='g', lw='0.1')
-        distanceList.append(distance(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2],pts[[2,3],0], pts[[2,3],1], pts[[2,3],2]))    
+        distanceList6.append(distance(pts[2,0], pts[2,1], pts[2,2],pts[3,0], pts[3,1], pts[3,2]))
+        # distanceList.append(distance(pts[[1,3],0], pts[[1,3],1], pts[[1,3],2],pts[[2,3],0], pts[[2,3],1], pts[[2,3],2]))    
+    print(str(distanceList3))
+
     ax.scatter(points[:,0], points[:,1], points[:,2], color='b')
 
+distAverages = []
+def constructAverage():
+    # distAverages = []
+    # Collecting the averages of the segment lengths for each point.
+    for i in range(len(distanceList1)):
+        distAverages.append(average(distanceList1[i],distanceList2[i],distanceList3[i]))
+    return distAverages
 
-# points_init = np.array(xCoord,yCoord, dtype = float)
+correspondingPoint = -1
+def smallestAverage():
+    min = 99999999
+    for i in range(len(distAverages)):
+        if distAverages[i] < min:
+            min = distAverages[i]
+            correspondingPoint = i
+    return correspondingPoint
 
-# points = np.array((xCoord,yCoord,zCoord), dtype = float)
+constructAverage()
+smallestAverage() 
+
+print("The point of the smallest average is " + str(correspondingPoint))
+    # points_init = np.array(xCoord,yCoord, dtype = float)
+
+    # points = np.array((xCoord,yCoord,zCoord), dtype = float)
 
 points = np.vstack([xCoord,yCoord,zCoord]).T
 tri = Delaunay(points)
