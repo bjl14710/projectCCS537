@@ -227,19 +227,18 @@ def constructAverage():
         distAverages.append(average(distanceList1[i],distanceList2[i],distanceList3[i]))
     return distAverages
 
-correspondingPoint = -1
+# correspondingPoint = -1
 def smallestAverage():
     min = 99999999
+    correspondingPoint = -1
+    # for i in range(len(distanceList1)):
+    #     distAverages.append(average(distanceList1[i],distanceList2[i],distanceList3[i]))
     for i in range(len(distAverages)):
         if distAverages[i] < min:
             min = distAverages[i]
             correspondingPoint = i
     return correspondingPoint
 
-constructAverage()
-smallestAverage() 
-
-print("The point of the smallest average is " + str(correspondingPoint))
     # points_init = np.array(xCoord,yCoord, dtype = float)
 
     # points = np.array((xCoord,yCoord,zCoord), dtype = float)
@@ -251,6 +250,11 @@ fig = plt.figure()
 ax = plt.axes(projection="3d")
 
 plot_triangulation(ax, points,tri)
+
+constructAverage()
+point = smallestAverage() 
+
+print("The point of the smallest average is " + str(point))
 
 # ax.scatter3D(xCoord, yCoord, zCoord, c=z_points, cmap='hsv')
 
