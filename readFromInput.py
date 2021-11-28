@@ -243,6 +243,46 @@ def smallestAverage():
 
     # points = np.array((xCoord,yCoord,zCoord), dtype = float)
 
+def cartesianToSpherical(x,y,z,distance):
+    # x = rcos(theta)
+    # y = rsin(theta)
+    # WE KNOW R!!!! IT IS THE DISTANCE
+    # We don't know r. But the distance applies to the 
+    # sphere to some extent.
+    # We can make these spherical coordinates using distance
+    # as the r, then finding the new spherical coordinates with the
+    # next spherical coordinates. finding the z value using the distance
+    # and x and y values. 
+    # x and y from center of graph in the view of the telescope
+    # with a distance given in the csv file. z is new y?????
+
+    # ok. Well we will have to ignore y because it is acting very weird.
+    '''
+    Z
+    |
+    |
+    |
+    |
+    |__________X
+    '''
+    # This complicates things with our finding of z. or technicially y but here we are
+    # treating z as if it is y for simplicity. So we need to find a new z based on the distance
+    # From earth. We know x, y, and distance. We can find theta with that and phi with theta and those
+    r = distance
+    phi = math.acos(z/r)
+    theta = math.acos(x/(r*math.sin(phi)))
+    # theta = np.arccos(z/r)
+
+    # This should help: https://math.libretexts.org/Bookshelves/Calculus/Book%3A_Calculus_(OpenStax)/12%3A_Vectors_in_Space/12.7%3A_Cylindrical_and_Spherical_Coordinates
+    return r,theta,phi  
+
+def sphericalToCartesian(r,theta,phi):
+    x = r*math.cos(theta)*math.sin(phi)
+    y = r*math.sin(theta)*math.cos(phi)
+    z = r*math.cos(phi)
+    return x,y,z
+
+
 points = np.vstack([xCoord,yCoord,zCoord]).T
 tri = Delaunay(points)
 
