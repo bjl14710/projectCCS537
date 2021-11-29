@@ -17,7 +17,7 @@ class Coord:
 
 
 xCoord = []
-yCoord = []
+distList = []
 zCoord = []
 ListaDelDistancia = []
 # with open('testData - Sheet1.csv') as csv_file:
@@ -29,7 +29,7 @@ ListaDelDistancia = []
 #             line_count += 1
 #         else:
 #             xCoord.append(row[1])
-#             yCoord.append(row[2])
+#             distList.append(row[2])
 #             line_count += 1
 #     print(f'Processed {line_count} lines.')
 
@@ -42,10 +42,10 @@ with open('data/hygdata_v3.csv') as csv_file:
             line_count += 1
         elif line_count < 11:
             xCoord.append(row[17])
-            yCoord.append(row[18])
+            distList.append(row[9])
             zCoord.append(row[19])
             # xCoord[i] = row[17]
-            # yCoord[i] = row[18]
+            # distList[i] = row[18]
             # zCoord[i] = row[19]
             
             ListaDelDistancia.append(row[9])
@@ -58,7 +58,7 @@ with open('data/hygdata_v3.csv') as csv_file:
 # This triangulation, right now, added line_count to it because want to only get the first 200 items
 
 # print(str(xCoord))
-# print(str(yCoord))
+# print(str(distList))
 def constructPoints(x,y):
     points = []
     for i in range(len(x)):
@@ -94,7 +94,7 @@ def distance(x1,y1,z1,x2,y2,z2):
 # # y = 2.0 * np.random.rand(20) - 1.0
 # # z = 2.0 * np.random.rand(20) - 1.0
 # x = 2.0 * xCoord - 1
-# y = 2.0 * yCoord - 1
+# y = 2.0 * distList - 1
 # z = 2.0 * zCoord - 1
 
 # points = np.vstack([x, y, z]).T
@@ -119,35 +119,35 @@ def distance(x1,y1,z1,x2,y2,z2):
 # ax = fig.add_subplot(projection='3d')
 # ax = plt.axes(projection='3d')
 
-# ax.plot3D(xCoord,yCoord,zCoord,'gray')
+# ax.plot3D(xCoord,distList,zCoord,'gray')
 
-# ax.plot_trisurf(xCoord, yCoord, zCoord, color='white', edgecolors='grey', alpha=0.5)
-# ax.scatter3D(xCoord, yCoord, zCoord, color = 'b')
+# ax.plot_trisurf(xCoord, distList, zCoord, color='white', edgecolors='grey', alpha=0.5)
+# ax.scatter3D(xCoord, distList, zCoord, color = 'b')
 
-# ax.plot(xCoord, yCoord, zCoord, color='r')
+# ax.plot(xCoord, distList, zCoord, color='r')
 ### Constructing the graph
-arr = constructArray(xCoord,yCoord,zCoord)
+arr = constructArray(xCoord,distList,zCoord)
 # print('array is ' + str(arr))
 # tri = Delaunay(arr) # points: np.array() of 3d points 
-# tri = triangulation(xCoord,yCoord,zCoord) # points: np.array() of 3d points 
+# tri = triangulation(xCoord,distList,zCoord) # points: np.array() of 3d points 
 # indices = tri.simplices
 # print('3d triangulation is ' + str(tri))
 # print(str(indices))
 # vertices = arr[indices]
 
 
-# points = constructPoints(xCoord,yCoord)
+# points = constructPoints(xCoord,distList)
 # # print(str(points))
 # tri = Delaunay(points)
 # _ = delaunay_plot_2d(tri)
-# plt.scatter(xCoord,yCoord)
+# plt.scatter(xCoord,distList)
 
 # z = np.random.randint(100, size =(50))
 # x = np.random.randint(80, size =(50))
 # y = np.random.randint(60, size =(50))
 
 # x = [] * len(xCoord)
-# y = [] * len(yCoord)
+# y = [] * len(distList)
 # z = [] * len(zCoord)
 
 
@@ -156,8 +156,8 @@ arr = constructArray(xCoord,yCoord,zCoord)
 # ax = plt.axes(projection ="3d")
 
 
-# ax.scatter3D(xCoord,yCoord,zCoord, color = "green")
-# ax.scatter3D(xCoord,yCoord,zCoord)
+# ax.scatter3D(xCoord,distList,zCoord, color = "green")
+# ax.scatter3D(xCoord,distList,zCoord)
 
 # plt.show()
 
@@ -166,7 +166,7 @@ arr = constructArray(xCoord,yCoord,zCoord)
 
 # ax = fig.add_subplot(111, projection='3d')
 # for i in range(len(xCoord)):
-#     ax.scatter(xCoord[i],yCoord[i],zCoord[i])
+#     ax.scatter(xCoord[i],distList[i],zCoord[i])
 
 # plt.show()
 
@@ -183,7 +183,7 @@ z_points = 15 * np.random.random(len(zCoord))
 
 xCoord = np.array(xCoord,dtype = float)
 
-yCoord = np.array(yCoord,dtype = float)
+distList = np.array(distList,dtype = float)
 
 zCoord = np.array(zCoord,dtype = float)
 
@@ -239,11 +239,11 @@ def smallestAverage():
             correspondingPoint = i
     return correspondingPoint
 
-    # points_init = np.array(xCoord,yCoord, dtype = float)
+    # points_init = np.array(xCoord,distList, dtype = float)
 
-    # points = np.array((xCoord,yCoord,zCoord), dtype = float)
+    # points = np.array((xCoord,distList,zCoord), dtype = float)
 
-def cartesianToSpherical(x,y,z,distance):
+def cartesianToSpherical(x,z,distance):
     # x = rcos(theta)
     # y = rsin(theta)
     # WE KNOW R!!!! IT IS THE DISTANCE
@@ -261,9 +261,9 @@ def cartesianToSpherical(x,y,z,distance):
     Z
     |
     |
-    |
-    |
-    |__________X
+    |  y
+    | /
+    |/__________X
     '''
     # This complicates things with our finding of z. or technicially y but here we are
     # treating z as if it is y for simplicity. So we need to find a new z based on the distance
@@ -282,12 +282,18 @@ def sphericalToCartesian(r,theta,phi):
     z = r*math.cos(phi)
     return x,y,z
 
+def multipleCartToSphere(x,z,dist):
 
-points = np.vstack([xCoord,yCoord,zCoord]).T
+points = np.vstack([xCoord,distList,zCoord]).T
 tri = Delaunay(points)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
+
+# cartesian to spherical and back for finding y
+
+sphere = cartesianToSpherical()
+sphericalToCartesian
 
 plot_triangulation(ax, points,tri)
 
@@ -296,7 +302,7 @@ point = smallestAverage()
 
 print("The point of the smallest average is " + str(point))
 
-# ax.scatter3D(xCoord, yCoord, zCoord, c=z_points, cmap='hsv')
+# ax.scatter3D(xCoord, distList, zCoord, c=z_points, cmap='hsv')
 
 plt.show()
 
