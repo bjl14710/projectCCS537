@@ -40,7 +40,7 @@ with open('data/hygdata_v3.csv') as csv_file:
         if line_count < 2:
             # print(f'Coloumn names are {", ".join(row)}')
             line_count += 1
-        elif line_count < 11:
+        elif line_count < 14:
             xCoord.append(row[17])
             distList.append(row[9])
             zCoord.append(row[19])
@@ -282,18 +282,27 @@ def sphericalToCartesian(r,theta,phi):
     z = r*math.cos(phi)
     return x,y,z
 
-def multipleCartToSphere(x,z,dist):
+def multipleCartToSphere(x,z,dist,n):
+    points = []
+    sphere = []
+    for i in range(n):
+        sphere.append(cartesianToSpherical(x[i],z[i],dist[i])) 
+        points.append(sphericalToCartesian(sphere[i][0],sphere[i][1],sphere[i][2]))
+    return points
 
 points = np.vstack([xCoord,distList,zCoord]).T
-tri = Delaunay(points)
+# tri = Delaunay(points)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 
 # cartesian to spherical and back for finding y
 
-sphere = cartesianToSpherical()
-sphericalToCartesian
+otherPoints = multipleCartToSphere(xCoord,zCoord,distList,len(xCoord))
+otherPoints = np.vstack([otherPoints[0],otherPoints[1],otherPoints[2]]).T
+tri = Delaunay(otherPoints)
+# Testing with the new found coordinates
+
 
 plot_triangulation(ax, points,tri)
 
