@@ -15,23 +15,90 @@ class Coord:
         self.point = point
         self.size = size
 
+class Triangulation:
+    def __init__(self, point):
+        self.point = point
+
+    def lenOfSegment(self,point1,point2):
+        return(math.sqrt(point1**2 + point2**2))
+
+    def ConstructTriangle(self,points):
+        tri = 0
+        return tri
+
+    def ConstructSphere(self,points):
+        
+        return 0
+
+    def average(self,x,y,z):
+        return (x+y+z)/3
+
+    def cartesianToSpherical(self,x,z,distance):
+        # x = rcos(theta)
+        # y = rsin(theta)
+        # WE KNOW R!!!! IT IS THE DISTANCE
+        # We don't know r. But the distance applies to the 
+        # sphere to some extent.
+        # We can make these spherical coordinates using distance
+        # as the r, then finding the new spherical coordinates with the
+        # next spherical coordinates. finding the z value using the distance
+        # and x and y values. 
+        # x and y from center of graph in the view of the telescope
+        # with a distance given in the csv file. z is new y?????
+
+        # ok. Well we will have to ignore y because it is acting very weird.
+        '''
+        Z
+        |
+        |
+        |  y
+        | /
+        |/__________X
+        '''
+        # This complicates things with our finding of z. or technicially y but here we are
+        # treating z as if it is y for simplicity. So we need to find a new z based on the distance
+        # From earth. We know x, y, and distance. We can find theta with that and phi with theta and those
+        r = distance
+        phi = math.acos(z/r)
+        theta = math.acos(x/(r*math.sin(phi)))
+        # theta = np.arccos(z/r)
+
+        # This should help: https://math.libretexts.org/Bookshelves/Calculus/Book%3A_Calculus_(OpenStax)/12%3A_Vectors_in_Space/12.7%3A_Cylindrical_and_Spherical_Coordinates
+        return r,theta,phi  
+
+    def sphericalToCartesian(self,r,theta,phi):
+        x = r*math.cos(theta)*math.sin(phi)
+        y = r*math.sin(theta)*math.cos(phi)
+        z = r*math.cos(phi)
+        return x,y,z
+
+    def multipleCartToSphere(self,x,z,dist,n):
+        points = []
+        sphere = []
+        for i in range(n):
+            sphere.append(cartesianToSpherical(x[i],z[i],dist[i])) 
+            points.append(sphericalToCartesian(sphere[i][0],sphere[i][1],sphere[i][2]))
+        return points
+
+
+
+
+    def neighbors(self,point):
+# find the neighbors to use for sphere
+        return 0
+
+    def isClockwise(self, point1, point2):
+        clock = True 
+        # if()
+        return clock
+ 
+    
+
 
 xCoord = []
 distList = []
 zCoord = []
 ListaDelDistancia = []
-# with open('testData - Sheet1.csv') as csv_file:
-#     csv_reader = csv.reader(csv_file, delimiter=',')
-#     line_count = 0
-#     for row in csv_reader:
-#         if line_count == 0:
-#             print(f'Coloumn names are {", ".join(row)}')
-#             line_count += 1
-#         else:
-#             xCoord.append(row[1])
-#             distList.append(row[2])
-#             line_count += 1
-#     print(f'Processed {line_count} lines.')
 
 with open('data/hygdata_v3.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
@@ -76,110 +143,10 @@ def distance(x1,y1,z1,x2,y2,z2):
     deltZ = (z2-z1)
     return math.sqrt(deltX*deltX + deltY*deltY + deltZ*deltZ)
 
-# def plot_tri_simple(ax, points, tri):
-#     for tr in tri.simplices:
-#         pts = points[tr,: ]
-#     ax.plot3D(pts[[0, 1], 0], pts[[0, 1], 1], pts[[0, 1], 2], color = 'g', lw = '0.1')
-#     ax.plot3D(pts[[0, 2], 0], pts[[0, 2], 1], pts[[0, 2], 2], color = 'g', lw = '0.1')
-#     ax.plot3D(pts[[0, 3], 0], pts[[0, 3], 1], pts[[0, 3], 2], color = 'g', lw = '0.1')
-#     ax.plot3D(pts[[1, 2], 0], pts[[1, 2], 1], pts[[1, 2], 2], color = 'g', lw = '0.1')
-#     ax.plot3D(pts[[1, 3], 0], pts[[1, 3], 1], pts[[1, 3], 2], color = 'g', lw = '0.1')
-#     ax.plot3D(pts[[2, 3], 0], pts[[2, 3], 1], pts[[2, 3], 2], color = 'g', lw = '0.1')
-
-#     ax.scatter(points[: , 0], points[: , 1], points[: , 2], color = 'b')
-
-# ### calling with random points
-# np.random.seed(0)
-# # x = 2.0 * np.random.rand(20) - 1.0
-# # y = 2.0 * np.random.rand(20) - 1.0
-# # z = 2.0 * np.random.rand(20) - 1.0
-# x = 2.0 * xCoord - 1
-# y = 2.0 * distList - 1
-# z = 2.0 * zCoord - 1
-
-# points = np.vstack([x, y, z]).T
-# tri = Delaunay(points)
-
-# fig = plt.figure()
-# ax = plt.axes(projection = '3d')
-# plot_tri_simple(ax, points, tri)
-
-
-
-
-### second attempt
-
-
-
-
-# fig = plt.figure()
-
-# fig = plt.figure(figsize = (10,10))
-
-# ax = fig.add_subplot(projection='3d')
-# ax = plt.axes(projection='3d')
-
-# ax.plot3D(xCoord,distList,zCoord,'gray')
-
-# ax.plot_trisurf(xCoord, distList, zCoord, color='white', edgecolors='grey', alpha=0.5)
-# ax.scatter3D(xCoord, distList, zCoord, color = 'b')
-
-# ax.plot(xCoord, distList, zCoord, color='r')
 ### Constructing the graph
 arr = constructArray(xCoord,distList,zCoord)
-# print('array is ' + str(arr))
-# tri = Delaunay(arr) # points: np.array() of 3d points 
-# tri = triangulation(xCoord,distList,zCoord) # points: np.array() of 3d points 
-# indices = tri.simplices
-# print('3d triangulation is ' + str(tri))
-# print(str(indices))
-# vertices = arr[indices]
-
-
-# points = constructPoints(xCoord,distList)
-# # print(str(points))
-# tri = Delaunay(points)
-# _ = delaunay_plot_2d(tri)
-# plt.scatter(xCoord,distList)
-
-# z = np.random.randint(100, size =(50))
-# x = np.random.randint(80, size =(50))
-# y = np.random.randint(60, size =(50))
-
-# x = [] * len(xCoord)
-# y = [] * len(distList)
-# z = [] * len(zCoord)
-
-
-
-# fig = plt.figure(figsize = (10, 7))
-# ax = plt.axes(projection ="3d")
-
-
-# ax.scatter3D(xCoord,distList,zCoord, color = "green")
-# ax.scatter3D(xCoord,distList,zCoord)
-
-# plt.show()
-
-
-# fig = plt.figure(figsize=(4,4))
-
-# ax = fig.add_subplot(111, projection='3d')
-# for i in range(len(xCoord)):
-#     ax.scatter(xCoord[i],distList[i],zCoord[i])
-
-# plt.show()
-
-
-
-# z_line = np.linspace(0, 15, 1000)
-# x_line = np.cos(z_line)
-# y_line = np.sin(z_line)
-# ax.plot3D(x_line, y_line, z_line, 'gray')
 
 z_points = 15 * np.random.random(len(zCoord))
-# x_points = np.cos(z_points) + 0.1 * np.random.randn(100)
-# y_points = np.sin(z_points) + 0.1 * np.random.randn(100)
 
 xCoord = np.array(xCoord,dtype = float)
 
@@ -229,13 +196,13 @@ def constructAverage():
 
 # correspondingPoint = -1
 def smallestAverage():
-    min = 99999999
+    max = -99999999
     correspondingPoint = -1
     # for i in range(len(distanceList1)):
     #     distAverages.append(average(distanceList1[i],distanceList2[i],distanceList3[i]))
     for i in range(len(distAverages)):
-        if distAverages[i] < min:
-            min = distAverages[i]
+        if distAverages[i] > max:
+            max = distAverages[i]
             correspondingPoint = i
     return correspondingPoint
 
@@ -299,7 +266,7 @@ ax = plt.axes(projection="3d")
 # cartesian to spherical and back for finding y
 
 otherPoints = multipleCartToSphere(xCoord,zCoord,distList,len(xCoord))
-otherPoints = np.vstack([otherPoints[0],otherPoints[1],otherPoints[2]]).T
+# otherPoints = np.vstack([otherPoints[0],otherPoints[1],otherPoints[2]]).T
 tri = Delaunay(otherPoints)
 # Testing with the new found coordinates
 
@@ -308,6 +275,7 @@ plot_triangulation(ax, points,tri)
 
 constructAverage()
 point = smallestAverage() 
+
 
 print("The point of the smallest average is " + str(point))
 
