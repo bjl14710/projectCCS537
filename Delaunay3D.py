@@ -24,15 +24,15 @@ def pointInTriangle4(p,t):
 
 def pointInTriangle6(p, t):
     triangle = path.Path([t[0], t[1], t[2]])
-    points = np.array([p[0], p[1]]).reshape(1, 2)
+    points = np.array([p[0], p[1]]).reshape(1, 3)
     res = triangle.contains_points(points)
     return res[0]
 
 def vecLen(v):
-    return math.sqrt(v[0]**2 + v[1]**2)
+    return math.sqrt(v[0]**2 + v[1]**2+v[2]**2)
 
 def euclidDistance(p1, p2):
-    p = (p2[0]-p1[0], p2[1]-p1[1])
+    p = (p2[0]-p1[0], p2[1]-p1[1],p2[2]-p1[2])
     return vecLen(p)
 
 def alreadyVisited(t, visited):
@@ -69,10 +69,10 @@ def debugDrawPath(triangles, startT, p):
     im.save("some_lines.jpg")
 
 def getCenterPoint(t):
-    return ((t[0][0]+t[1][0]+t[2][0])/3, (t[0][1]+t[1][1]+t[2][1])/3)
+    return ((t[0][0]+t[1][0]+t[2][0])/3, (t[0][1]+t[1][1]+t[2][1])/3,(t[0][2]+t[1][2]+t[2][2])/3)
 
 def normVectorFromPoints(p1, p2):
-    v = (p2[0]-p1[0], p2[1]-p1[1])
+    v = (p2[0]-p1[0], p2[1]-p1[1],p2[2]-p1[2])
     div = np.linalg.norm(v)
     if abs(div) < 0.00001:
         return v
@@ -205,7 +205,7 @@ def findTriangle2(point, triangles, debug):
     return t
 
 def dist(p1, p2):
-    a = (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2
+    a = (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2+(p2[2]-p1[2])**2
     return math.sqrt(a)
 
 def pointOnLine2(p, p1, p2):
@@ -273,7 +273,7 @@ def findNeighbourTriangle(triangles, p1, p2, notp3):
     return (None, -1)
 
 # https://en.wikipedia.org/wiki/Delaunay_triangulation
-# Brainfuck aber awesome, wenns geht :-)
+#  aber awesome, wenns geht :-)
 def notValid(t, p):
     matrix = np.array(
             [[t[0][0],t[0][1],t[0][0]**2+t[0][1]**2,1],

@@ -9,6 +9,7 @@ from matplotlib.tri import triangulation
 from scipy.spatial import ConvexHull, Delaunay, delaunay_plot_2d
 from mpl_toolkits import mplot3d
 
+print(sys.path)
 
 class Coord:
     def __init__(self,point,size):
