@@ -99,8 +99,7 @@ class Triangulation:
 xCoord = []
 distList = []
 zCoord = []
-ListaDelDistancia = []
-
+AmountOfPoints = 30
 with open('data/hygdata_v3.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
@@ -108,7 +107,7 @@ with open('data/hygdata_v3.csv') as csv_file:
         if line_count < 2:
             # print(f'Coloumn names are {", ".join(row)}')
             line_count += 1
-        elif line_count < 14:
+        elif line_count < AmountOfPoints:
             xCoord.append(row[17])
             distList.append(row[9])
             zCoord.append(row[19])
@@ -116,7 +115,6 @@ with open('data/hygdata_v3.csv') as csv_file:
             # distList[i] = row[18]
             # zCoord[i] = row[19]
             
-            ListaDelDistancia.append(row[9])
             line_count += 1
         else:
             break
@@ -163,8 +161,8 @@ distanceList4 = []
 distanceList5 = []
 distanceList6 = []
 
-def average(x,y,z):
-    return (x+y+z)/3
+def average(x,y,z,xx,yy,zz):
+    return (x+y+z+xx+yy+zz)/6
 
 
 def plot_triangulation(ax,points,tri):
@@ -192,11 +190,16 @@ def constructAverage():
     # distAverages = []
     # Collecting the averages of the segment lengths for each point.
     for i in range(len(distanceList1)):
-        distAverages.append(average(distanceList1[i],distanceList2[i],distanceList3[i]))
+        distAverages.append(average(distanceList1[i],
+                                    distanceList2[i],
+                                    distanceList3[i],
+                                    distanceList4[i],
+                                    distanceList5[i],
+                                    distanceList6[i]))
     return distAverages
 
 # correspondingPoint = -1
-def smallestAverage():
+def biggestAverage():
     max = -99999999
     correspondingPoint = -1
     # for i in range(len(distanceList1)):
@@ -236,9 +239,13 @@ def cartesianToSpherical(x,z,distance):
     # This complicates things with our finding of z. or technicially y but here we are
     # treating z as if it is y for simplicity. So we need to find a new z based on the distance
     # From earth. We know x, y, and distance. We can find theta with that and phi with theta and those
-    r = distance
-    phi = math.acos(z/r)
-    theta = math.acos(x/(r*math.sin(phi)))
+    try:
+        r = distance
+        phi = math.acos(z/r)
+        theta = math.acos(x/(r*math.sin(phi)))
+    except:
+        # hit a zero, can't run the cosine
+        return 0,0,0
     # theta = np.arccos(z/r)
 
     # This should help: https://math.libretexts.org/Bookshelves/Calculus/Book%3A_Calculus_(OpenStax)/12%3A_Vectors_in_Space/12.7%3A_Cylindrical_and_Spherical_Coordinates
@@ -258,6 +265,87 @@ def multipleCartToSphere(x,z,dist,n):
         points.append(sphericalToCartesian(sphere[i][0],sphere[i][1],sphere[i][2]))
     return points
 
+
+def WireframeSphere(centre=[0.,0.,0.], radius=1.,
+                    n_meridians=20, n_circles_latitude=None):
+    """
+    Create the arrays of values to plot the wireframe of a sphere.
+
+    Parameters
+    ----------
+    centre: array like
+        A point, defined as an iterable of three numerical values.
+    radius: number
+        The radius of the sphere.
+    n_meridians: int
+        The number of meridians to display (circles that pass on both poles).
+    n_circles_latitude: int
+        The number of horizontal circles (akin to the Equator) to display.
+        Notice this includes one for each pole, and defaults to 4 or half
+        of the *n_meridians* if the latter is larger.
+
+    Returns
+    -------
+    sphere_x, sphere_y, sphere_z: arrays
+        The arrays with the coordinates of the points to make the wireframe.
+        Their shape is (n_meridians, n_circles_latitude).
+
+    Examples
+    --------
+    >>> fig = plt.figure()
+    >>> ax = fig.gca(projection='3d')
+    >>> ax.set_aspect("equal")
+    >>> sphere = ax.plot_wireframe(*WireframeSphere(), color="r", alpha=0.5)
+    >>> fig.show()
+
+    >>> fig = plt.figure()
+    >>> ax = fig.gca(projection='3d')
+    >>> ax.set_aspect("equal")
+    >>> frame_xs, frame_ys, frame_zs = WireframeSphere()
+    >>> sphere = ax.plot_wireframe(frame_xs, frame_ys, frame_zs, color="r", alpha=0.5)
+    >>> fig.show()
+    """
+    if n_circles_latitude is None:
+        n_circles_latitude = max(n_meridians/2, 4)
+    u, v = np.mgrid[0:2*np.pi:n_meridians*1j, 0:np.pi:n_circles_latitude*1j]
+    sphere_x = radius * np.cos(u) * np.sin(v) + centre[0]
+    sphere_y = radius * np.sin(u) * np.sin(v) + centre[1]
+    sphere_z = radius * np.cos(v) + centre[2]
+
+    ax.plot_wireframe(sphere_x, sphere_y, sphere_z)
+
+    return sphere_x, sphere_y, sphere_z
+
+def sphere(center=[0.,0.,0.], radius = 1):
+    u = np.linspace(0, np.pi, 30)
+    v = np.linspace(0, 2 * np.pi, 30)
+    
+    x = np.outer(center[0] + radius * np.sin(u),  np.sin(v))
+    y = np.outer(center[1] + radius * np.sin(u),  np.cos(v))
+    z = np.outer(center[2] + radius * np.cos(u),  np.ones_like(v))
+    # r = min(distanceList1[point],
+    #         distanceList2[point],
+    #         distanceList3[point],
+    #         distanceList4[point],
+    #         distanceList5[point],
+    #         distanceList6[point])
+    # r^2 = (x-deltX)^2 + (y - deltY)^2 + (z - deltZ)^2
+    # x = sqrt((y - deltY)^2 + (z - deltZ)^2) - r^2)
+    # r = 10
+    # deltX, deltY, deltZ = otherPoints[point][0],otherPoints[point][1],otherPoints[point][2]
+    # x, y, z = r*x - deltX, r*y - deltY, r*z - deltZ
+
+    # fig = plt.figure()
+    # ax = plt.axes(projection='3d')
+
+    ax.plot_wireframe(x, y, z)
+
+def listPoints(points):
+    List = []
+    for p in points:
+        List.append(p[1])
+    return List
+
 points = np.vstack([xCoord,distList,zCoord]).T
 # tri = Delaunay(points)
 
@@ -267,19 +355,37 @@ ax = plt.axes(projection="3d")
 # cartesian to spherical and back for finding y
 
 otherPoints = multipleCartToSphere(xCoord,zCoord,distList,len(xCoord))
-# otherPoints = np.vstack([otherPoints[0],otherPoints[1],otherPoints[2]]).T
-tri = Delaunay(otherPoints)
-# Testing with the new found coordinates
 
+yPoints = listPoints(otherPoints)
+points = np.vstack([xCoord,yPoints,zCoord]).T
+
+
+tri = Delaunay(points)
+# Testing with the new found coordinates
+# newPoints = np.vstack([otherPoints[:][0],otherPoints[:][1],otherPoints[:][2]]).T
+# newPoints = np.array([otherPoints[:][0],otherPoints[:][1],otherPoints[:][2]])
+newPoints = listPoints(otherPoints)
 
 plot_triangulation(ax, points,tri)
 
+
 constructAverage()
-point = smallestAverage() 
+point = biggestAverage() 
 
 
-print("The point of the smallest average is " + str(point))
+# r = min(distanceList1[point],
+#             distanceList2[point],
+#             distanceList3[point],
+#             distanceList4[point],
+#             distanceList5[point],
+#             distanceList6[point])
 
+# print("other points is " + str(otherPoints[point]))
+WireframeSphere(points[point],50)
+print("The point of the biggest average is at " + str(point))
+
+
+# plt.Circle((otherPoints[point][0],otherPoints[point][1],otherPoints[point][2]),distAverages[point])
 # ax.scatter3D(xCoord, distList, zCoord, c=z_points, cmap='hsv')
 
 plt.show()
