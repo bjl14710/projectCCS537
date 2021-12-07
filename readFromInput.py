@@ -99,7 +99,7 @@ class Triangulation:
 xCoord = []
 distList = []
 zCoord = []
-AmountOfPoints = 30
+AmountOfPoints = 100
 with open('data/hygdata_v3.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
